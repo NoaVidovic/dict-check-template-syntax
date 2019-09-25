@@ -1,0 +1,45 @@
+%YAML 1.2
+---
+name: Dict Verification Template
+file_extensions: [tmpl]
+scope: text.tmpl
+
+contexts:
+  main:
+    - include: names
+    - include: bad_indent
+    - include: bad_spacing
+    - include: keywords
+    - include: strings
+    - include: types
+
+  names:
+    - match: ^(\s{4})*\w+
+      scope: variable.other.tmpl
+
+  bad_indent:
+    - match: ^(\s+).+
+      scope: invalid.illegal.tmpl
+
+  bad_spacing:
+    - match: \b\s\s+
+      scope: invalid.illegal.tmpl
+
+  keywords:
+    - match: \b(in|contains)\b
+      scope: keyword.control.tmpl
+
+  strings:
+    - match: \(
+      scope: constant.character.escape.tmpl
+      push:
+        - meta_scope: string.quoted.other.tmpl
+        - match: \|
+          scope: constant.character.escape.tmpl
+        - match: \)$
+          scope: constant.character.escape.tmpl
+          pop: true
+
+  types:
+    - match: \b(str|list|int|float|datetime)\b
+      scope: support.type.tmpl
